@@ -16,13 +16,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      
+
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -30,13 +30,13 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      
+
       - name: Configure parallel build
         run: echo "org.gradle.parallel=true" >> local.properties
-      
+
       - name: Create temporary release keystore
         run: keytool -noprompt -genkey -v -keystore "app/keystore" -alias alias -storepass password -keypass password -keyalg RSA -validity 10 -dname "CN=antennapod.org, OU=dummy, O=dummy, L=dummy, S=dummy, C=US"
-      
+
       - name: Run unit tests
         run: ./gradlew testFreeDebugUnitTest testPlayDebugUnitTest
 
@@ -49,13 +49,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      
+
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -63,16 +63,16 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      
+
       - name: Configure parallel build
         run: echo "org.gradle.parallel=true" >> local.properties
-      
+
       - name: Create temporary release keystore
         run: keytool -noprompt -genkey -v -keystore "app/keystore" -alias alias -storepass password -keypass password -keyalg RSA -validity 10 -dname "CN=antennapod.org, OU=dummy, O=dummy, L=dummy, S=dummy, C=US"
-      
+
       - name: Build F-Droid Release APK
         run: ./gradlew assembleFreeRelease
-      
+
       - name: Upload F-Droid APK
         uses: actions/upload-artifact@v4
         with:
@@ -82,20 +82,20 @@ jobs:
 
   build-play-apk:
     name: "Build Play Store APK"
-    needs: test  
+    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      
+
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -103,16 +103,16 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      
+
       - name: Configure parallel build
         run: echo "org.gradle.parallel=true" >> local.properties
-      
+
       - name: Create temporary release keystore
         run: keytool -noprompt -genkey -v -keystore "app/keystore" -alias alias -storepass password -keypass password -keyalg RSA -validity 10 -dname "CN=antennapod.org, OU=dummy, O=dummy, L=dummy, S=dummy, C=US"
-      
+
       - name: Build Play Release APK
         run: ./gradlew assemblePlayRelease
-      
+
       - name: Upload Play APK
         uses: actions/upload-artifact@v4
         with:
@@ -129,13 +129,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      
+
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
@@ -143,21 +143,21 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
-      
+
       - name: Configure parallel build
         run: echo "org.gradle.parallel=true" >> local.properties
-      
+
       - name: Build Debug APKs
         run: ./gradlew assembleFreeDebug assemblePlayDebug
-      
+
       - name: Upload F-Droid Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: app-free-debug.apk
           path: app/build/outputs/apk/free/debug/app-free-debug.apk
           retention-days: 7
-      
-      - name: Upload Play Debug APK  
+
+      - name: Upload Play Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: app-play-debug.apk
@@ -173,38 +173,38 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Generate version from commit count
         id: version
         run: |
           VERSION=$(git rev-list --count HEAD)
           echo "version=v1.0.$VERSION" >> $GITHUB_OUTPUT
           echo "Generated version: v1.0.$VERSION"
-      
+
       - name: Download F-Droid Release APK
         uses: actions/download-artifact@v4
         with:
           name: app-free-release.apk
           path: ./
-      
+
       - name: Download Play Release APK
         uses: actions/download-artifact@v4
         with:
           name: app-play-release.apk
           path: ./
-      
+
       - name: Download F-Droid Debug APK
         uses: actions/download-artifact@v4
         with:
           name: app-free-debug.apk
           path: ./
-      
+
       - name: Download Play Debug APK
         uses: actions/download-artifact@v4
         with:
           name: app-play-debug.apk
           path: ./
-      
+
       - name: Generate changelog
         id: changelog
         run: |
@@ -212,7 +212,7 @@ jobs:
           echo "changelog<<EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-      
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -221,12 +221,12 @@ jobs:
           body: |
             ## What's Changed
             ${{ steps.changelog.outputs.changelog }}
-            
+
             ## Downloads
             - **F-Droid Release**: app-free-release.apk (recommended for F-Droid users)
             - **Play Store Release**: app-play-release.apk (includes Chromecast support)
             - **Debug Builds**: For testing purposes only
-            
+
             The F-Droid release APK is compatible with F-Droid and excludes proprietary components.
           files: |
             app-free-release.apk

@@ -272,7 +272,7 @@ public class ExoPlayerWrapper {
 
     public void setPlaybackParams(float speed, boolean skipSilence) {
         playbackParameters = new PlaybackParameters(speed, playbackParameters.pitch);
-        
+
         // Fix for issue #7203: Ensure proper ordering to prevent audio distortion
         // When both speed changes and skip silence are enabled, we need to:
         // 1. Set playback parameters first to configure speed processing
