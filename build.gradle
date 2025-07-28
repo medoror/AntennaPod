@@ -5,6 +5,7 @@ plugins {
     id 'com.android.application' version "$agpVersion" apply false
     id 'com.android.library' version "$agpVersion" apply false
     id 'com.github.spotbugs' version '4.8.0' apply false
+    id 'com.diffplug.spotless' version '6.25.0'
     id 'checkstyle'
 }
 
@@ -46,6 +47,19 @@ project.ext {
 
 checkstyle {
     toolVersion '10.3.1'
+}
+
+spotless {
+    format 'misc', {
+        target '.github/**/*.yml', '.github/**/*.yaml', 'app/**/*.yml', 'app/**/*.yaml', '*.md'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    java {
+        target 'app/src/**/*.java', 'playback/*/src/**/*.java', 'ui/*/src/**/*.java', 'storage/*/src/**/*.java', 'net/*/src/**/*.java', 'parser/*/src/**/*.java', 'model/src/**/*.java', 'event/src/**/*.java'
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 tasks.register('checkstyle', Checkstyle) {

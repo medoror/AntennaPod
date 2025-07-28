@@ -237,6 +237,7 @@ public class ExoPlayerWrapper implements MediaPlayerWrapper {
             simpleCache = null;
         }
         createPlayer();
+        playbackParameters = exoPlayer.getPlaybackParameters();
     }
 
     public void seekTo(int i) throws IllegalStateException {
